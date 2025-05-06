@@ -17,12 +17,12 @@ public class CdkExampleEcsFargateApp {
 
                 // Uncomment the next block to specialize this stack for the AWS Account
                 // and Region that are implied by the current CLI configuration.
-                /*
+                
                 .env(Environment.builder()
                         .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
                         .region(System.getenv("CDK_DEFAULT_REGION"))
                         .build())
-                */
+                
 
                 // Uncomment the next block if you know exactly what Account and Region you
                 // want to deploy the stack to.

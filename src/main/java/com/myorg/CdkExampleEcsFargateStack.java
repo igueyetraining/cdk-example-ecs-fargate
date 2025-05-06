@@ -29,6 +29,11 @@ public class CdkExampleEcsFargateStack extends Stack {
 
         Cluster cluster = Cluster.Builder.create(this, "MyClusterForEcsDemo")
                 .vpc(vpc).build();
+                
+//        String accountIdFromEnv =  this.getAccount(); //975050070855
+        Stack stack = Stack.of(this);
+        String accountIdFromEnv = stack.getAccount();
+//    String accountId =  "12312312399";
         
 //        TaskDefinition taskDefinition = new TaskDefinition(scope, id, null);
 //        taskDefinition.getExecutionRole().addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryPowerUser"));
@@ -49,6 +54,8 @@ public class CdkExampleEcsFargateStack extends Stack {
                     ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy")
                 ))
                 .build();
+                
+        
         
         ApplicationLoadBalancedFargateService loadBalancedFargateService = ApplicationLoadBalancedFargateService.Builder.create(this, "MyFargateService")
                 .cluster(cluster)
@@ -56,7 +63,7 @@ public class CdkExampleEcsFargateStack extends Stack {
                 .desiredCount(6)
                 .taskImageOptions(
                        ApplicationLoadBalancedTaskImageOptions.builder()
-                               .image(ContainerImage.fromRegistry("851725632219.dkr.ecr.us-east-1.amazonaws.com/userbook-maven:latest"))
+                               .image(ContainerImage.fromRegistry(accountIdFromEnv + ".dkr.ecr.us-east-1.amazonaws.com/userbook-maven:latest"))
                                .containerPort(8081)
                                .executionRole(executionRole)
                                .build())
