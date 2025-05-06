@@ -30,10 +30,7 @@ public class CdkExampleEcsFargateStack extends Stack {
         Cluster cluster = Cluster.Builder.create(this, "MyClusterForEcsDemo")
                 .vpc(vpc).build();
                 
-//        String accountIdFromEnv =  this.getAccount(); //975050070855
-        Stack stack = Stack.of(this);
-        String accountIdFromEnv = stack.getAccount();
-//    String accountId =  "12312312399";
+        String accountIdFromEnv =  this.getAccount();
         
 //        TaskDefinition taskDefinition = new TaskDefinition(scope, id, null);
 //        taskDefinition.getExecutionRole().addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryPowerUser"));
