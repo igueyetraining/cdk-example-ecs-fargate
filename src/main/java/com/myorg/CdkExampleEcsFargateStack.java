@@ -57,7 +57,7 @@ public class CdkExampleEcsFargateStack extends Stack {
         ApplicationLoadBalancedFargateService loadBalancedFargateService = ApplicationLoadBalancedFargateService.Builder.create(this, "MyFargateService")
                 .cluster(cluster)
                 .cpu(512)
-                .desiredCount(6)
+                .desiredCount(2)
                 .taskImageOptions(
                        ApplicationLoadBalancedTaskImageOptions.builder()
                                .image(ContainerImage.fromRegistry(accountIdFromEnv + ".dkr.ecr.us-east-1.amazonaws.com/userbook-maven:latest"))
