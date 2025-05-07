@@ -156,7 +156,7 @@ public class CdkExampleEcsFargateStack extends Stack {
             .protocol(ApplicationProtocol.HTTP)
             .targets(List.of(fargateServiceB))
             .healthCheck(HealthCheck.builder()
-                .path("/helloWorldRestApis/hello ") // Nginx hello serves on /
+                .path("/helloWorldRestApis/hello")
                 .interval(Duration.seconds(60))
                 .build())
             .build();
