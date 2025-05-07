@@ -24,14 +24,12 @@ import software.amazon.awscdk.services.ecs.OperatingSystemFamily;
 import software.amazon.awscdk.services.ecs.PortMapping;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
-import software.amazon.awscdk.services.elasticloadbalancingv2.AddApplicationTargetsProps;
-import software.amazon.awscdk.services.elasticloadbalancingv2.AddRuleProps;
+import software.amazon.awscdk.services.elasticloadbalancingv2.AddApplicationTargetGroupsProps;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationListener;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancer;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationProtocol;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationTargetGroup;
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
-import software.amazon.awscdk.services.elasticloadbalancingv2.ListenerAction;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ListenerCondition;
 import software.amazon.awscdk.services.iam.ManagedPolicy;
 import software.amazon.awscdk.services.iam.Role;
@@ -92,8 +90,8 @@ public class CdkExampleEcsFargateStack extends Stack {
                 
         ApplicationLoadBalancedFargateService serviceUserBookMaven = ApplicationLoadBalancedFargateService.Builder.create(this, "MyFargateUserbookService")
                 .cluster(cluster)
-                .cpu(256)
-                .memoryLimitMiB(512)
+                .cpu(512)
+                .memoryLimitMiB(2048)
                 .desiredCount(1)
                 .taskImageOptions(
                        ApplicationLoadBalancedTaskImageOptions.builder()
@@ -128,8 +126,9 @@ public class CdkExampleEcsFargateStack extends Stack {
                 .build();
 
         FargateTaskDefinition taskDefHelloWorlGradle = FargateTaskDefinition.Builder.create(this, "TaskDefHelloWorlGradle")
-            .cpu(256)
-            .memoryLimitMiB(512)
+            .cpu(512)
+            .memoryLimitMiB(2048)
+            .executionRole(executionRole)
             .runtimePlatform(software.amazon.awscdk.services.ecs.RuntimePlatform.builder()
                     .cpuArchitecture(CpuArchitecture.X86_64)
                     .operatingSystemFamily(OperatingSystemFamily.LINUX)
@@ -162,13 +161,44 @@ public class CdkExampleEcsFargateStack extends Stack {
             .build();
 
  // Add a rule to the listener to forward traffic for /service-b/* to targetGroupB
-        listener.addTargets("ServiceHelloWorlGradleTargetRule", AddApplicationTargetsProps.builder()
-            .priority(10) // Must be unique for rules on this listener
-            .conditions(List.of(
-                ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*"))
-            ))
-            .targetGroupName(targetGroupB.getTargetGroupName()) // Specify the target group(s) to forward to
-            .build());
+        // 3. Create the ApplicationListenerRule directly
+        // new ApplicationListenerRule(this, "ServiceHelloWorlGradleTargetRule", ApplicationListenerRuleProps.builder()
+        //     .listener(listener) // The listener to attach this rule to
+        //     .priority(10)       // Rule priority (must be unique for non-default rules)
+        //     .conditions(List.of(
+        //         ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*")) // Condition for the rule
+        //     ))
+        //     .action(ListenerAction.forward(List.of(targetGroupB))) // Action: forward to targetGroupB
+        //     .build()
+        // );
+
+        listener.addTargetGroups("ServiceHelloWorlGradleTargetRule", AddApplicationTargetGroupsProps.builder()
+                 .targetGroups(List.of(targetGroupB))
+                 // the properties below are optional
+                 .conditions(List.of(
+                    ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*")) // Condition for the rule
+                    ))
+                 .priority(10)
+                 .build()
+        );
+        // listener.addAction("ServiceBRule", AddRuleProps.builder()
+        //     .priority(10) // Priorities must be unique. Lower numbers evaluated first.
+        //     .conditions(List.of(
+        //         ListenerCondition.pathPatterns(List.of("/service-b/*")) // Route /service-b/* to this rule
+        //     ))
+        //     .action(ListenerAction.forward(List.of(targetGroupB))) // Forward to Service B's target group
+        //     .build()
+        // );
+
+        // listener.addTargets("ServiceHelloWorlGradleTargetRule", AddApplicationTargetsProps.builder()
+        //     .priority(10) // Must be unique for rules on this listener
+        //     .conditions(List.of(
+        //         ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*"))
+        //     ))
+        //     // .targetGroupName(targetGroupB.getTargetGroupName()) // Specify the target group(s) to forward to
+        //     .targets(targets)
+        //     .build()
+        // );
             
         // Output the ALB DNS name
         CfnOutput.Builder.create(this, "LoadBalancerDNS")
