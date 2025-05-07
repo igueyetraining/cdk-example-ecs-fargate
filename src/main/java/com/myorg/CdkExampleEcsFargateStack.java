@@ -151,7 +151,8 @@ public class CdkExampleEcsFargateStack extends Stack {
 
         ApplicationTargetGroup targetGroupB = ApplicationTargetGroup.Builder.create(this, "TargetGroupHelloWorlGradle")
             .vpc(vpc)
-            .port(serviceHelloWorldGradleContainerPort)
+            // .port(serviceHelloWorldGradleContainerPort)
+            .port(80)
             .protocol(ApplicationProtocol.HTTP)
             .targets(List.of(fargateServiceB))
             .healthCheck(HealthCheck.builder()
