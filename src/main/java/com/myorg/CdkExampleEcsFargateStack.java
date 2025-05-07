@@ -161,17 +161,6 @@ public class CdkExampleEcsFargateStack extends Stack {
             .build();
 
  // Add a rule to the listener to forward traffic for /service-b/* to targetGroupB
-        // 3. Create the ApplicationListenerRule directly
-        // new ApplicationListenerRule(this, "ServiceHelloWorlGradleTargetRule", ApplicationListenerRuleProps.builder()
-        //     .listener(listener) // The listener to attach this rule to
-        //     .priority(10)       // Rule priority (must be unique for non-default rules)
-        //     .conditions(List.of(
-        //         ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*")) // Condition for the rule
-        //     ))
-        //     .action(ListenerAction.forward(List.of(targetGroupB))) // Action: forward to targetGroupB
-        //     .build()
-        // );
-
         listener.addTargetGroups("ServiceHelloWorlGradleTargetRule", AddApplicationTargetGroupsProps.builder()
                  .targetGroups(List.of(targetGroupB))
                  // the properties below are optional
@@ -181,24 +170,6 @@ public class CdkExampleEcsFargateStack extends Stack {
                  .priority(10)
                  .build()
         );
-        // listener.addAction("ServiceBRule", AddRuleProps.builder()
-        //     .priority(10) // Priorities must be unique. Lower numbers evaluated first.
-        //     .conditions(List.of(
-        //         ListenerCondition.pathPatterns(List.of("/service-b/*")) // Route /service-b/* to this rule
-        //     ))
-        //     .action(ListenerAction.forward(List.of(targetGroupB))) // Forward to Service B's target group
-        //     .build()
-        // );
-
-        // listener.addTargets("ServiceHelloWorlGradleTargetRule", AddApplicationTargetsProps.builder()
-        //     .priority(10) // Must be unique for rules on this listener
-        //     .conditions(List.of(
-        //         ListenerCondition.pathPatterns(List.of("/helloWorldRestApis/*"))
-        //     ))
-        //     // .targetGroupName(targetGroupB.getTargetGroupName()) // Specify the target group(s) to forward to
-        //     .targets(targets)
-        //     .build()
-        // );
             
         // Output the ALB DNS name
         CfnOutput.Builder.create(this, "LoadBalancerDNS")
@@ -207,11 +178,11 @@ public class CdkExampleEcsFargateStack extends Stack {
             .build();
             
         CfnOutput.Builder.create(this, "ServiceUserbookMavenEndpointInfo")
-            .value("Access Service UserbookMaven (default path): http://" + alb.getLoadBalancerDnsName() + "/userbook/")
+            .value("Access Service UserbookMaven (default path): http://" + alb.getLoadBalancerDnsName() + "/userbook/hello")
             .build();
             
         CfnOutput.Builder.create(this, "ServiceHelloWorldEndpoint")
-            .value("Access Service Hello WorldGradle: http://" + alb.getLoadBalancerDnsName() + "/helloWorldRestApis/")
+            .value("Access Service Hello WorldGradle: http://" + alb.getLoadBalancerDnsName() + "/helloWorldRestApis/hello")
             .build();
     
     }
